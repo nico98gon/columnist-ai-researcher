@@ -1,8 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
 import { Button } from "@/components/ui/button"
 import { ArticleCard } from "./ArticleCard"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { Ban } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import ReactMarkdown from "react-markdown"
 
 interface Article {
   id: string
@@ -20,7 +26,29 @@ interface ArticleListProps {
 }
 
 export function ArticleList({ articles }: ArticleListProps) {
+  const router = useRouter()
   const [selectedArticles, setSelectedArticles] = useState<string[]>([])
+  const [generatedId, setGeneratedId] = useState<string | null>(null)
+
+  const { messages, append, status } = useChat({
+    api: "/api/generate",
+    onError: (error) => {
+      console.error("Error en useChat:", error.message, error.stack)
+      toast.error("¡Error!", {
+        description: `Ocurrió un error al generar el artículo: ${error.message}. Intenta de nuevo más tarde o contacta a soporte.`,
+        icon: <Ban size={20} className="text-red-500" />,
+      })
+    },
+    onFinish: (message) => {
+      const articleId = Math.random().toString(36).substr(2, 9)
+      const content = message.parts
+        ?.filter((part): part is { type: "text"; text: string } => part.type === "text")
+        .map((part) => part.text)
+        .join("") || ""
+      localStorage.setItem(`article_${articleId}`, content)
+      setGeneratedId(articleId)
+    },
+  })
 
   const handleToggleSelect = (id: string) => {
     setSelectedArticles((prev) =>
@@ -28,11 +56,62 @@ export function ArticleList({ articles }: ArticleListProps) {
     )
   }
 
-  const handleConvertSelected = () => {
-    // !TODO!: Implementar la lógica para "convertir" los artículos seleccionados
-    console.log("Artículos seleccionados para convertir:", selectedArticles)
-    // !TODO!: Enviar selectedArticles a AI SDK Vercel
+  const handleSelected = async () => {
+    const selected = articles.filter((article) => selectedArticles.includes(article.id))
+    // Prompt simplificado para prueba
+    const prompt = "Genera un artículo corto de prueba basado en: " + selected.map((article) => article.title).join(", ")
+
+    try {
+      await append({ role: "user", content: prompt })
+    } catch (error: any) {
+      console.error("Error al generar el artículo:", error.message, error.stack)
+      toast.error("¡Error!", {
+        description: `Ocurrió un error al buscar: ${error.message}. Intenta de nuevo más tarde o contacta a soporte.`,
+        icon: <Ban size={20} className="text-red-500" />,
+      })
+    }
   }
+
+  const handleReinterpret = async () => {
+    const lastGeneratedMessage = messages.findLast((msg) => msg.role === "assistant")
+    const lastGenerated = lastGeneratedMessage?.parts
+      ?.filter((part): part is { type: "text"; text: string } => part.type === "text")
+      .map((part) => part.text)
+      .join("") || ""
+    if (!lastGenerated) {
+      toast.error("¡Error!", {
+        description: "No hay contenido generado para reinterpretar",
+        icon: <Ban size={20} className="text-red-500" />,
+      })
+      return
+    }
+
+    try {
+      await append(
+        { role: "user", content: lastGenerated },
+        { data: { reinterpret: lastGenerated } }
+      )
+    } catch (error: any) {
+      console.error("Error al reinterpretar el artículo:", error.message, error.stack)
+      toast.error("¡Error!", {
+        description: `Ocurrió un error al reinterpretar: ${error.message}. Intenta de nuevo más tarde o contacta a soporte.`,
+        icon: <Ban size={20} className="text-red-500" />,
+      })
+    }
+  }
+
+  const handleNavigate = () => {
+    if (generatedId) {
+      router.push(`/article/${generatedId}`)
+    } else {
+      toast.error("¡Error!", {
+        description: "No hay artículo generado para ver",
+        icon: <Ban size={20} className="text-red-500" />,
+      })
+    }
+  }
+
+  const isProcessing = status === "streaming"
 
   return (
     <div className="w-full h-full p-4">
@@ -60,12 +139,52 @@ export function ArticleList({ articles }: ArticleListProps) {
             {selectedArticles.length} artículo{selectedArticles.length !== 1 ? "s" : ""} seleccionado
             {selectedArticles.length !== 1 ? "s" : ""}
           </p>
-          <Button
-            onClick={handleConvertSelected}
-            className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium ml-auto"
-          >
-            Generar artículo
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                onClick={handleSelected}
+                disabled={isProcessing}
+                className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium ml-auto"
+              >
+                {isProcessing ? "Generando..." : "Generar artículo"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[425px] sm:max-w-[700px]">
+              <DialogHeader>
+                <DialogTitle>Artículo Generado</DialogTitle>
+                <DialogDescription>
+                  
+                </DialogDescription>
+              </DialogHeader>
+              <div className="h-[75vh] overflow-y-scroll">
+                {messages.length > 0 && (
+                  <ReactMarkdown>
+                    {messages
+                      .findLast((msg) => msg.role === "assistant")
+                      ?.parts?.filter((part): part is { type: "text"; text: string } => part.type === "text")
+                      .map((part) => part.text)
+                      .join("") || ""}
+                  </ReactMarkdown>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={handleReinterpret}
+                  disabled={isProcessing}
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  {isProcessing ? "Procesando..." : "Reinterpretar"}
+                </Button>
+                <Button
+                  onClick={handleNavigate}
+                  disabled={!generatedId}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
+                >
+                  Ver artículo completo
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </div>
