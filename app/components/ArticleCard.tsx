@@ -55,7 +55,7 @@ export function ArticleCard({ article, isSelected, onToggleSelect }: ArticleCard
             </div>
             <ChevronDown
               className={cn(
-                "h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200",
+                "h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 cursor-pointer",
                 isExpanded && "rotate-180",
               )}
             />
@@ -81,7 +81,7 @@ export function ArticleCard({ article, isSelected, onToggleSelect }: ArticleCard
           <Switch
             checked={isSelected}
             onCheckedChange={() => onToggleSelect(article.id)}
-            className="data-[state=checked]:bg-primary cursor-pointer"
+            className="data-[state=checked]:bg-primary"
           />
         </div>
       </div>

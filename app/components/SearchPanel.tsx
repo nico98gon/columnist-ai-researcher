@@ -4,6 +4,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { SearchForm } from "./SearchForm"
 import { useSearchStore } from "@/store/searchStore"
 import { ArticleList } from "./ArticleList"
+import { CategorizationPanel } from "./CategorizationPanel"
 
 export const SearchPanel = () => {
   const { result } = useSearchStore()
@@ -25,16 +26,14 @@ export const SearchPanel = () => {
       <ResizableHandle />
       <ResizablePanel defaultSize={50}>
         <ResizablePanelGroup direction="vertical" className="h-full">
-          <ResizablePanel defaultSize={55} className="">
+          <ResizablePanel defaultSize={35} className="">
             <div className="flex flex-col justify-end p-6 overflow-y-scroll">
               <SearchForm />
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={45}>
-            <div className="flex h-full items-center justify-center p-6">
-              <span className="font-semibold">Three</span>
-            </div>
+          <ResizablePanel defaultSize={65}>
+            <CategorizationPanel />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>

@@ -98,7 +98,7 @@ export function SearchForm() {
     <div className="flex-grow flex flex-col justify-end items-center p-6 gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4 min-w[900px]">
+          <div className="space-y-4">
             <Button
               type="button"
               variant="outline"
@@ -318,7 +318,7 @@ export function SearchForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Consulta de búsqueda</FormLabel>
-                <div className="flex gap-2 min-w-[350px] sm:min-w-[675px]">
+                <div className="flex gap-2 min-w-[350px] sm:min-w-[500px]">
                   <FormControl>
                     <Input placeholder="¿Qué tema investigamos hoy?" className="flex-1" {...field} />
                   </FormControl>
