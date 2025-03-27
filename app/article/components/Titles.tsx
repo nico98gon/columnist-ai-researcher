@@ -102,7 +102,7 @@ export const Titles = ({ articleContent, onTitleSelect }: TitlesProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" variant="secondary">
+        <Button variant="secondary">
           Generar Títulos
         </Button>
       </DialogTrigger>

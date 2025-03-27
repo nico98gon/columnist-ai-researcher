@@ -36,7 +36,7 @@ export function ArticleCard({ article, isSelected, onToggleSelect }: ArticleCard
   return (
     <Card className="w-full mb-4 overflow-hidden transition-all duration-200">
       <div className="flex items-start">
-        <div className="flex-grow cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex-grow" onClick={() => setIsExpanded(!isExpanded)}>
           <CardHeader className="flex flex-row items-start gap-4 pb-2">
             {article.favicon && (
               <img
@@ -86,19 +86,17 @@ export function ArticleCard({ article, isSelected, onToggleSelect }: ArticleCard
         </div>
       </div>
 
-      {isExpanded && (
-        <CardFooter className="flex justify-end pt-4 pb-4">
-          <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center text-sm text-primary hover:underline"
-          >
-            Ver artículo original
-            <ExternalLink className="ml-1 h-3 w-3" />
-          </a>
-        </CardFooter>
-      )}
+      <CardFooter className="flex justify-end">
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center text-sm text-primary hover:underline"
+        >
+          Ver artículo original
+          <ExternalLink className="ml-1 h-3 w-3" />
+        </a>
+      </CardFooter>
     </Card>
   )
 }

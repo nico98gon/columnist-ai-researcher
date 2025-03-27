@@ -29,8 +29,10 @@ export default function RootLayout({
                 <div className="flex justify-between h-[8vh]">
                   <div className="flex justify-between">
                     <div className="flex-shrink-0 flex items-center">
-                      <span className="text-2xl font-bold">Admin Dashboard</span>
+                      <span className="text-2xl font-bold">Generador de artículos</span>
                     </div>
+                  </div>
+                  <div className="flex items-center gap-4">
                     <div className="flex ml-8">
                       <NavigationMenu>
                         <NavigationMenuList className="gap-4">
@@ -42,8 +44,6 @@ export default function RootLayout({
                         </NavigationMenuList>
                       </NavigationMenu>
                     </div>
-                  </div>
-                  <div className="flex items-center">
                     <ThemeToggle />
                   </div>
                 </div>

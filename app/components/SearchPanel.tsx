@@ -25,8 +25,8 @@ export const SearchPanel = () => {
       <ResizableHandle />
       <ResizablePanel defaultSize={50}>
         <ResizablePanelGroup direction="vertical" className="h-full">
-          <ResizablePanel defaultSize={55}>
-            <div className="flex h-full flex-col justify-end p-6">
+          <ResizablePanel defaultSize={55} className="">
+            <div className="flex flex-col justify-end p-6 overflow-y-scroll">
               <SearchForm />
             </div>
           </ResizablePanel>

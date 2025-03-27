@@ -80,7 +80,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       <div className="max-w-3xl mx-auto">
         <div className="flex">
           <Link href="/">
-            <Button className="mb-4 cursor-pointer">Volver al inicio</Button>
+            <Button className="mb-4">Volver al inicio</Button>
           </Link>
           <div className="ml-auto">
             <Titles articleContent={articleContent} onTitleSelect={handleTitleSelect} />
@@ -91,19 +91,19 @@ export default function ArticlePage({ params }: ArticlePageProps) {
           {!isEditing && (
             <>
               <Button
-                className="mb-4 cursor-pointer ml-auto"
+                className="mb-4 ml-auto"
                 variant="secondary"
                 onClick={() => setIsEditing(true)}
               >
                 Editar
               </Button>
-              <Button className="mb-4 cursor-pointer" onClick={handleCopy}>
+              <Button className="mb-4" onClick={handleCopy}>
                 <Copy size={20} />
               </Button>
             </>
           )}
           {isEditing && (
-            <Button className="mb-4 cursor-pointer" onClick={handleSave}>
+            <Button className="mb-4" onClick={handleSave}>
               <Save size={20} />
             </Button>
           )}
