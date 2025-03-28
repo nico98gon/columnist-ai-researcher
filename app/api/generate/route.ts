@@ -20,7 +20,6 @@ function errorHandler(error: unknown): string {
 export async function POST(req: NextRequest) {
   try {
     const { messages, data } = await req.json()
-    console.log("Solicitud recibida en /api/generate:", { messages, data })
 
     const finalMessages = data?.reinterpret
       ? [
@@ -37,7 +36,6 @@ export async function POST(req: NextRequest) {
       messages: finalMessages,
     })
 
-    console.log("Respuesta generada con éxito, iniciando streaming...")
     return result.toDataStreamResponse({
       getErrorMessage: errorHandler,
     })
